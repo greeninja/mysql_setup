@@ -9,7 +9,7 @@
         state: present
     - name: Start and enable MySQL
       ansible.builtin.service:
-        name: mysql
+        name: mysqld
         state: started
         enabled: yes
     - name: Set root password
