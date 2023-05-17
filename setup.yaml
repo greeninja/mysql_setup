@@ -21,16 +21,19 @@
         host: localhost
         password: "{{ db_root_passwd }}"
         encrypted: false
+        login_password: "{{ db_root_passwd }}"
     - name: Create testing db
       community.mysql.mysql_db:
         name: testing
         state: present
+        login_password: "{{ db_root_passwd }}"
     - name: Create testing user
       community.mysql.mysql_user:
         name: test
         password: "{{ db_test_passwd }}"
         encrypted: false
         state: present
+        login_password: "{{ db_root_passwd }}"
         priv:
           'testing.*': 'ALL'
 
