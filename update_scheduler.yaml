@@ -1,5 +1,4 @@
 ---
-
 - name: Test
   hosts: 127.0.0.1
   connection: local
@@ -21,7 +20,9 @@
         login_user: root
         login_password: "{{ mysql_passwd }}"
         login_port: 3336
-        query: "select * from patching where scheduled_update_time like \"{{ minute_query }}\""
+        query: 'select * from patching where scheduled_update_time like "{{ minute_query }}"'
+      vars:
+        ansible_python_interpreter: /usr/bin/python
       register: mysql_results
     - name: Print results
       debug:
@@ -73,6 +74,8 @@
             query: "update patching set status = 'Updated' where id=%s"
             positional_args:
               - "{{ id }}"
+          vars:
+            ansible_python_interpreter: /usr/bin/python
       rescue:
         - name: Update failed - update MySQL
           community.mysql.mysql_query:
@@ -84,7 +87,5 @@
             query: "update patching set status = 'Failed' where id=%s"
             positional_args:
               - "{{ id }}"
-
-
-
-
+          vars:
+            ansible_python_interpreter: /usr/bin/python
