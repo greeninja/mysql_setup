@@ -1,0 +1,90 @@
+---
+
+- name: Test
+  hosts: 127.0.0.1
+  connection: local
+  tasks:
+    - name: Set date time
+      debug:
+        var: ansible_date_time
+    - name: Set MySQL date query
+      set_fact:
+        #minute_query: "{{ ansible_date_time.date }} {{ ansible_date_time.hour }}:{{ ansible_date_time.minute }}:*"
+        minute_query: "{{ ansible_date_time.date }}%"
+    - name: Print date query
+      debug:
+        var: minute_query
+    - name: Get hosts
+      community.mysql.mysql_query:
+        login_host: localhost
+        login_db: testing
+        login_user: root
+        login_password: "{{ mysql_passwd }}"
+        login_port: 3336
+        query: "select * from patching where scheduled_update_time like \"{{ minute_query }}\""
+      register: mysql_results
+    - name: Print results
+      debug:
+        var: mysql_results.query_result[0]
+    - name: Add hosts to Inv
+      ansible.builtin.add_host:
+        name: "{{ item.server }}"
+        groups: patching
+        id: "{{ item.id }}"
+      loop: "{{ mysql_results.query_result[0] }}"
+    - name: Print new hosts
+      debug:
+        var: groups['patching']
+
+- name: Run something
+  hosts: patching
+  connection: local
+  tasks:
+    - name: Dummy update block
+      block:
+        - name: Get to_fail
+          shell: "echo $(($RANDOM%2))"
+          register: to_fail_result
+        - name: Set to_fail fact
+          set_fact:
+            to_fail: "{{ to_fail_result.stdout }}"
+        - name: Debug to_fail result
+          debug:
+            var: to_fail
+        - name: Pause for simulated update
+          ansible.builtin.pause:
+            seconds: 30
+        - name: "true"
+          shell: "/bin/true"
+          when: to_fail == "0"
+        - name: "false"
+          shell: "/bin/false"
+          when: to_fail == "1"
+        - name: See if ID is there
+          debug:
+            var: id
+        - name: Update MySQL DB
+          community.mysql.mysql_query:
+            login_host: localhost
+            login_db: testing
+            login_user: root
+            login_password: "{{ mysql_passwd }}"
+            login_port: 3336
+            query: "update patching set status = 'Updated' where id=%s"
+            positional_args:
+              - "{{ id }}"
+      rescue:
+        - name: Update failed - update MySQL
+          community.mysql.mysql_query:
+            login_host: localhost
+            login_db: testing
+            login_user: root
+            login_password: "{{ mysql_passwd }}"
+            login_port: 3336
+            query: "update patching set status = 'Failed' where id=%s"
+            positional_args:
+              - "{{ id }}"
+
+
+
+
