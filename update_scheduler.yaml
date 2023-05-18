@@ -17,7 +17,7 @@
         var: minute_query
     - name: Get hosts
       community.mysql.mysql_query:
-        login_host: localhost
+        login_host: 10.242.64.5
         login_db: testing
         login_user: root
         login_password: "{{ mysql_passwd }}"
@@ -66,7 +66,7 @@
             var: id
         - name: Update MySQL DB
           community.mysql.mysql_query:
-            login_host: localhost
+            login_host: 10.242.64.5
             login_db: testing
             login_user: root
             login_password: "{{ mysql_passwd }}"
@@ -77,7 +77,7 @@
       rescue:
         - name: Update failed - update MySQL
           community.mysql.mysql_query:
-            login_host: localhost
+            login_host: 10.242.64.5
             login_db: testing
             login_user: root
             login_password: "{{ mysql_passwd }}"
