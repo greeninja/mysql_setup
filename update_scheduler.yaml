@@ -13,9 +13,7 @@
       set_fact:
         #minute_query: "{{ ansible_date_time.date }} {{ ansible_date_time.hour }}:{{ ansible_date_time.minute }}:*"
         minute_query: "{{ ansible_date_time.date }}%"
-    - name: Print date query
-      debug:
-        var: minute_query
+
     - name: Get hosts
       community.mysql.mysql_query:
         login_host: "{{ db_host }}"
@@ -25,18 +23,13 @@
         login_port: "{{ db_port }}"
         query: 'select * from patching where scheduled_update_time like "{{ minute_query }}"'
       register: mysql_results
-    - name: Print results
-      debug:
-        var: mysql_results.query_result[0]
+
     - name: Add hosts to Inv
       ansible.builtin.add_host:
         name: "{{ item.server }}"
         groups: patching
         id: "{{ item.id }}"
       loop: "{{ mysql_results.query_result[0] }}"
-    - name: Print new hosts
-      debug:
-        var: groups['patching']
 
 - name: Run something
   hosts: patching
@@ -57,11 +50,9 @@
           debug:
             var: to_fail
         - name: Set wait time in minutes (1-15)
-          shell: shuf -i 1-15 -n 1
+          shell: shuf -i 1-5 -n 1
           register: wait_time
-        - name: Debug wait time
-          debug:
-            var: wait_time
+
         - name: Pause for simulated update
           ansible.builtin.pause:
             minutes: "{{ wait_time.stdout }}"
@@ -71,9 +62,7 @@
         - name: "false"
           shell: "/bin/false"
           when: to_fail == "1"
-        - name: See if ID is there
-          debug:
-            var: id
+
         - name: Update MySQL DB
           community.mysql.mysql_query:
             login_host: "{{ db_host }}"
