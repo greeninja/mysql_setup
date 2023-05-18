@@ -56,9 +56,15 @@
         - name: Debug to_fail result
           debug:
             var: to_fail
+        - name: Set wait time in minutes (1-15)
+          shell: shuf -i 1-15 -n 1
+          register: wait_time
+        - name: Debug wait time
+          debug:
+            var: wait_time
         - name: Pause for simulated update
           ansible.builtin.pause:
-            seconds: 30
+            minutes: "{{ wait_time.stdout }}"
         - name: "true"
           shell: "/bin/true"
           when: to_fail == "0"
