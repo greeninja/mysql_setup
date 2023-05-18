@@ -2,6 +2,9 @@
 - name: Test
   hosts: 127.0.0.1
   connection: local
+  vars:
+    db_host: 10.242.64.5
+    db_port: 3306
   tasks:
     - name: Set date time
       debug:
@@ -13,16 +16,13 @@
     - name: Print date query
       debug:
         var: minute_query
-    - name: Debugging pause
-      ansible.builtin.pause:
-        minutes: 30
     - name: Get hosts
       community.mysql.mysql_query:
-        login_host: 10.242.64.5
+        login_host: "{{ db_host }}"
         login_db: testing
         login_user: root
         login_password: "{{ mysql_passwd }}"
-        login_port: 3336
+        login_port: "{{ db_port }}"
         query: 'select * from patching where scheduled_update_time like "{{ minute_query }}"'
       register: mysql_results
     - name: Print results
@@ -67,22 +67,22 @@
             var: id
         - name: Update MySQL DB
           community.mysql.mysql_query:
-            login_host: 10.242.64.5
+            login_host: "{{ db_host }}"
             login_db: testing
             login_user: root
             login_password: "{{ mysql_passwd }}"
-            login_port: 3336
+            login_port: "{{ db_port }}"
             query: "update patching set status = 'Updated' where id=%s"
             positional_args:
               - "{{ id }}"
       rescue:
         - name: Update failed - update MySQL
           community.mysql.mysql_query:
-            login_host: 10.242.64.5
+            login_host: "{{ db_host }}"
             login_db: testing
             login_user: root
             login_password: "{{ mysql_passwd }}"
-            login_port: 3336
+            login_port: "{{ db_port }}"
             query: "update patching set status = 'Failed' where id=%s"
             positional_args:
               - "{{ id }}"
