@@ -6,9 +6,6 @@
     db_host: 10.242.64.5
     db_port: 3306
   tasks:
-    - name: Set date time
-      debug:
-        var: ansible_date_time
     - name: Set MySQL date query
       set_fact:
         #minute_query: "{{ ansible_date_time.date }} {{ ansible_date_time.hour }}:{{ ansible_date_time.minute }}:*"
