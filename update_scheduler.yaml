@@ -8,8 +8,8 @@
   tasks:
     - name: Set MySQL date query
       set_fact:
-        #minute_query: "{{ ansible_date_time.date }} {{ ansible_date_time.hour }}:{{ ansible_date_time.minute }}:*"
-        minute_query: "{{ ansible_date_time.date }}%"
+        minute_query: "{{ ansible_date_time.date }} {{ ansible_date_time.hour }}:{{ ansible_date_time.minute }}:*"
+        #minute_query: "{{ ansible_date_time.date }}%"
 
     - name: Get hosts
       community.mysql.mysql_query:
