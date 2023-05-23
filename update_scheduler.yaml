@@ -32,7 +32,7 @@
   hosts: patching
   connection: local
   vars:
-    db_host: 10.242.64.5
+    db_host: 192.168.122.12
     db_port: 3306
   tasks:
     - name: Dummy update block
