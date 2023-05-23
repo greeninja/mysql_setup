@@ -6,6 +6,9 @@
     db_host: 10.242.64.5
     db_port: 3306
   tasks:
+    - name: Get job ID
+      debug:
+        var: tower_job_id
     - name: Set MySQL date query
       set_fact:
         minute_query: "{{ ansible_date_time.date }} {{ ansible_date_time.hour }}:{{ ansible_date_time.minute }}:%"
