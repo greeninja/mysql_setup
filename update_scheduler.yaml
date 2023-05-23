@@ -14,11 +14,11 @@
     - name: Get hosts
       community.mysql.mysql_query:
         login_host: "{{ db_host }}"
-        login_db: testing
+        login_db: patching
         login_user: root
         login_password: "{{ mysql_passwd }}"
         login_port: "{{ db_port }}"
-        query: 'select * from patching where update_time like "{{ minute_query }}" and status = "Booked";'
+        query: 'select * from patch where update_time like "{{ minute_query }}" and status = "Booked";'
       register: mysql_results
 
     - name: Add hosts to Inv
@@ -63,11 +63,11 @@
         - name: Update MySQL DB
           community.mysql.mysql_query:
             login_host: "{{ db_host }}"
-            login_db: testing
+            login_db: patching
             login_user: root
             login_password: "{{ mysql_passwd }}"
             login_port: "{{ db_port }}"
-            query: "update patching set status = 'Updated', job_id = %s  where id=%s"
+            query: "update patch set status = 'Updated', job_id = %s  where id=%s"
             positional_args:
               - "{{ tower_job_id }}"
               - "{{ id }}"
@@ -75,11 +75,11 @@
         - name: Update failed - update MySQL
           community.mysql.mysql_query:
             login_host: "{{ db_host }}"
-            login_db: testing
+            login_db: patching
             login_user: root
             login_password: "{{ mysql_passwd }}"
             login_port: "{{ db_port }}"
-            query: "update patching set status = 'Failed', job_id = %s where id=%s"
+            query: "update patch set status = 'Failed', job_id = %s where id=%s"
             positional_args:
               - "{{ tower_job_id }}"
               - "{{ id }}"
