@@ -6,9 +6,6 @@
     db_host: 10.242.64.5
     db_port: 3306
   tasks:
-    - name: Get job ID
-      debug:
-        var: tower_job_id
     - name: Set MySQL date query
       set_fact:
         minute_query: "{{ ansible_date_time.date }} {{ ansible_date_time.hour }}:{{ ansible_date_time.minute }}:%"
@@ -70,8 +67,9 @@
             login_user: root
             login_password: "{{ mysql_passwd }}"
             login_port: "{{ db_port }}"
-            query: "update patching set status = 'Updated' where id=%s"
+            query: "update patching set status = 'Updated', job_id = %s  where id=%s"
             positional_args:
+              - "{{ tower_job_id }}"
               - "{{ id }}"
       rescue:
         - name: Update failed - update MySQL
@@ -81,6 +79,7 @@
             login_user: root
             login_password: "{{ mysql_passwd }}"
             login_port: "{{ db_port }}"
-            query: "update patching set status = 'Failed' where id=%s"
+            query: "update patching set status = 'Failed', job_id = %s where id=%s"
             positional_args:
+              - "{{ tower_job_id }}"
               - "{{ id }}"
