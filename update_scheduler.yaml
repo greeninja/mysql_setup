@@ -50,7 +50,7 @@
         - name: Debug to_fail result
           debug:
             var: to_fail
-        - name: Set wait time in minutes (1-15)
+        - name: Set wait time in minutes (1-5)
           shell: shuf -i 1-5 -n 1
           register: wait_time
 
