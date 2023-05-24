@@ -11,10 +11,6 @@
         minute_query: "{{ ansible_date_time.date }} {{ ansible_date_time.hour }}:{{ ansible_date_time.minute }}:%"
         #minute_query: "{{ ansible_date_time.date }}%"
 
-    - name: Show date query
-      debug:
-        var: minute_query
-
     - name: Get hosts
       community.mysql.mysql_query:
         login_host: "{{ db_host }}"
